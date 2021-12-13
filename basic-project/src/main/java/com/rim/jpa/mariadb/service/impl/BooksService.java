@@ -11,4 +11,6 @@ public interface BooksService {
 	List<Book> getAllBooksByGreaterThanYear(Integer year);
 
 	int deleteByBookNameLike(BookDTO bookDto);
+
+	Book updateBook(Integer bookId, BookDTO bookDto);
 }

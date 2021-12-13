@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +22,9 @@ public class BooksServiceImpl implements BooksService {
 
 	@Autowired
 	BooksRepository booksRepository;
+
+	@Autowired
+	private ModelMapper modelMapper;
 
 	@Override
 	public List<Book> getAllBooksByYear(Integer year) {
@@ -63,6 +67,30 @@ public class BooksServiceImpl implements BooksService {
 		}
 
 		return numberOfBooksDeleted;
+	}
+
+	@Override
+	public Book updateBook(Integer bookId, BookDTO bookDto) {
+		Book bookFromDb = booksRepository.getOne(bookId);
+
+		Book book = modelMapper.map(bookDto, Book.class);
+		book.setBookId(bookId);
+
+		if (book.getAuthor() == null) {
+			book.setAuthor(bookFromDb.getAuthor());
+		}
+
+		if (book.getBookName() == null) {
+			book.setBookName(bookFromDb.getBookName());
+		}
+
+		if (book.getBookReleaseDate() == null) {
+			book.setBookReleaseDate(bookFromDb.getBookReleaseDate());
+		}
+
+		booksRepository.saveAndFlush(book);
+
+		return book;
 	}
 
 }
