@@ -11,7 +11,7 @@ public class StringsUtils implements Serializable {
 
 	public String getStringFromCharacter(String text, String character, int position) {
 		String stringRecovered = "";
-		String stringArray[] = text.split(character);
+		String[] stringArray = text.split(character);
 
 		stringRecovered = stringArray[position];
 
