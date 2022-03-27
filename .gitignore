@@ -15,9 +15,3 @@ local.properties
 .loadpath
 .recommenders
 /basic-project/.classpath
-
-.gitignore
-basic-project/.settings/org.eclipse.jdt.core.prefs
-basic-project/.settings/org.eclipse.jdt.core.prefs
-basic-project/.settings/org.eclipse.jdt.apt.core.prefs
-.gitignore
