@@ -6,7 +6,6 @@ import java.util.List;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,9 +40,6 @@ public class BookController {
 	@Autowired
 	BookException bookException;
 
-	@Autowired
-	private ModelMapper modelMapper;
-
 	// GET METHODS
 	@GetMapping(path = "/", produces = "application/json")
 	public ResponseEntity<Object> getAllBooks() {
@@ -52,11 +48,41 @@ public class BookController {
 		return ResponseEntity.ok(booksRepository.findAll());
 	}
 
+	@GetMapping(path = "/id/{id}", produces = "application/json")
+	public ResponseEntity<Object> getBookById(@PathVariable Integer id) {
+		logger.info("getBookById");
+
+		Book book = new Book();
+
+		try {
+			book = booksService.getBookById(id);
+
+			if (book == null) {
+				return new ResponseEntity<>(bookException.bookNotFoundException(id), HttpStatus.BAD_REQUEST);
+			}
+		} catch (Exception e) {
+			logger.error("getBookById for the id {}, Exception: {}", id, ExceptionUtils.getStackTrace(e));
+		}
+
+		return ResponseEntity.ok(book);
+	}
+
 	@GetMapping(path = "/year/{year}", produces = "application/json")
 	public ResponseEntity<Object> getAllBooksByYear(@PathVariable Integer year) {
 		logger.info("getAllBooksByYear");
 
-		return ResponseEntity.ok(booksService.getAllBooksByYear(year));
+		List<Book> listOfBooks = new ArrayList<>();
+
+		try {
+			listOfBooks = booksService.getAllBooksByYear(year);
+
+			if (listOfBooks.isEmpty()) {
+				return new ResponseEntity<>(bookException.booksByYearException(year), HttpStatus.BAD_REQUEST);
+			}
+		} catch (Exception e) {
+			logger.error("getAllBooksByYear for the year {}, Exception: {}", year, ExceptionUtils.getStackTrace(e));
+		}
+		return ResponseEntity.ok(listOfBooks);
 	}
 
 	@GetMapping(path = "/year/gt/{year}", produces = "application/json")
@@ -68,8 +94,7 @@ public class BookController {
 			listOfBooks = booksService.getAllBooksByGreaterThanYear(year);
 
 			if (listOfBooks.isEmpty()) {
-				String a = bookException.booksGreaterThanYearException(year);
-				return new ResponseEntity(a, HttpStatus.BAD_REQUEST);
+				return new ResponseEntity<>(bookException.booksGreaterThanYearException(year), HttpStatus.BAD_REQUEST);
 			}
 		} catch (Exception e) {
 			logger.error("getAllBooksByGreaterThanYear for the year {}, Exception: {}", year, ExceptionUtils.getStackTrace(e));

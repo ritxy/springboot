@@ -27,6 +27,20 @@ public class BooksServiceImpl implements BooksService {
 	private ModelMapper modelMapper;
 
 	@Override
+	public Book getBookById(Integer bookId) {
+		logger.info("getBookById: {}", bookId);
+		Book book = new Book();
+
+		try {
+			book = booksRepository.findByBookId(bookId);
+		} catch (Exception e) {
+			logger.error("Error getBookById, Exception: {}", ExceptionUtils.getStackTrace(e));
+		}
+
+		return book;
+	}
+
+	@Override
 	public List<Book> getAllBooksByYear(Integer year) {
 		logger.info("getAllBooksByYear: {}", year);
 		List<Book> list = new ArrayList<>();
@@ -92,5 +106,4 @@ public class BooksServiceImpl implements BooksService {
 
 		return book;
 	}
-
 }

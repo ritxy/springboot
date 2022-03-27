@@ -10,6 +10,8 @@ import com.rim.jpa.mariadb.model.Book;
 
 @Repository
 public interface BooksRepository extends JpaRepository<Book, Integer> {
+	Book findByBookId(Integer id);
+
 	@Query("select b from Book b where YEAR(b.bookReleaseDate) = ?1")
 	List<Book> findByYear(Integer year);
 
