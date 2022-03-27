@@ -3,9 +3,9 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=java,eclipse
 
 ### Java ###
-.classpath
-.settings/
-target/
+basic-project/.classpath
+basic-project/.settings/
+basic-project/target/
 
 ### Eclipse ###
 .metadata
