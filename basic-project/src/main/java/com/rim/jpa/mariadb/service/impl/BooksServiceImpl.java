@@ -84,6 +84,7 @@ public class BooksServiceImpl implements BooksService {
 	}
 
 	@Override
+	@Transactional
 	public Book updateBook(Integer bookId, BookDTO bookDto) {
 		Book bookFromDb = booksRepository.getOne(bookId);
 

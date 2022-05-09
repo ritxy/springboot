@@ -2,6 +2,7 @@ package com.rim.jpa.mariadb.model;
 
 import java.io.Serializable;
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -13,9 +14,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 
 @Entity
 @Table(name = "authors")
@@ -39,14 +37,10 @@ public class Author implements Serializable {
 
 	// We can use CascadeType.REFRESH or CascadeType.PERSIST if we want to make an
 	// INSERT
-	@OneToMany(cascade = CascadeType.REFRESH)
-	@Fetch(FetchMode.JOIN)
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+//	@Fetch(FetchMode.JOIN)
 	@JoinColumn(name = "book_author_fk")
-	private List<Book> listOfBooks;
-
-	public Author() {
-
-	}
+	private List<Book> listOfBooks = new ArrayList<>();
 
 	public Integer getAuthorId() {
 		return authorId;
@@ -90,7 +84,10 @@ public class Author implements Serializable {
 	}
 
 	public void setListOfBooks(List<Book> listOfBooks) {
-		this.listOfBooks = listOfBooks;
+		if(listOfBooks == null) {
+			listOfBooks = new ArrayList<>();	
+		}
+		this.listOfBooks.addAll(listOfBooks);
 	}
 
 }

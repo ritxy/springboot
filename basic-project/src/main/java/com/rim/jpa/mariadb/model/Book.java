@@ -6,15 +6,13 @@ import java.sql.Date;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -37,16 +35,12 @@ public class Book implements Serializable {
 
 	// We can use CascadeType.REFRESH or CascadeType.PERSIST if we want to make an
 	// INSERT
-	@ManyToOne(cascade = CascadeType.REFRESH)
-	@Fetch(FetchMode.JOIN)
+	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
+//	@Fetch(FetchMode.JOIN)
 	@JoinColumn(name = "book_author_fk")
 	// With this line avoid the loop reference at print the JSON
-	@JsonIgnoreProperties("listOfBooks")
-	private Author author;
-
-	public Book() {
-
-	}
+	@JsonIgnoreProperties({"listOfBooks", "hibernateLazyInitializer", "handler"}) 
+	private Author author = new Author();
 
 	public Integer getBookId() {
 		return bookId;

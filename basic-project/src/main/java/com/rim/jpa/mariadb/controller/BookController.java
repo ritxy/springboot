@@ -3,6 +3,8 @@ package com.rim.jpa.mariadb.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,10 +20,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.rim.jpa.mariadb.dto.AuthorWithBooksDTO;
 import com.rim.jpa.mariadb.dto.BookDTO;
 import com.rim.jpa.mariadb.exceptions.BookException;
 import com.rim.jpa.mariadb.model.Author;
 import com.rim.jpa.mariadb.model.Book;
+import com.rim.jpa.mariadb.repository.AuthorsRepository;
 import com.rim.jpa.mariadb.repository.BooksRepository;
 import com.rim.jpa.mariadb.service.impl.BooksService;
 
@@ -31,6 +35,9 @@ public class BookController {
 
 	private static final Logger logger = LogManager.getLogger(BookController.class);
 
+	@Autowired
+	AuthorsRepository authorsRepository;
+	
 	@Autowired
 	BooksRepository booksRepository;
 
@@ -119,6 +126,33 @@ public class BookController {
 		book.getAuthor().setAuthorId(author.getAuthorId());
 
 		booksRepository.saveAndFlush(book);
+
+		return ResponseEntity.ok(Boolean.TRUE);
+	}
+	
+	@PostMapping(path = "/insertAuthorwithBooks", consumes = "application/json")
+	@Transactional
+	public ResponseEntity<Object> insertAuthorWithBooks(@RequestBody AuthorWithBooksDTO authorWithBooksDTO) {
+		logger.info("insertBook");
+
+		Author author = authorWithBooksDTO.getAuthor();
+		List<Book> listOfBooks = authorWithBooksDTO.getListOfBooks();
+		author.setListOfBooks(listOfBooks);
+
+		authorsRepository.saveAndFlush(author);
+		
+		for (Book bookDto : listOfBooks) {
+			Book book = new Book();
+			
+			author.setAuthorId(author.getAuthorId());
+
+			book.setBookName(bookDto.getBookName());
+			book.setBookReleaseDate(bookDto.getBookReleaseDate());
+			book.setAuthor(author);
+			book.getAuthor().setAuthorId(author.getAuthorId());
+
+			booksRepository.saveAndFlush(book);
+		}
 
 		return ResponseEntity.ok(Boolean.TRUE);
 	}
